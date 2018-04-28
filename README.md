@@ -2,6 +2,13 @@
 
 (I'm just trying to add ESP32 support right now, will issue a PR later)
 
+
+Current status on ESP32:
+- compiles correctly
+- default AP IP is 192.168.1.1
+- default wifi config panel address is 192.168.1.1/wifi.htm
+
+
 Persistent WiFiManager Arduino library for ESP8266-based microcontrollers
 
 
