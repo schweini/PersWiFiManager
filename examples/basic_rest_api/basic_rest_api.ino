@@ -11,19 +11,22 @@
 //includes
 #include <PersWiFiManager.h>
 #include <ArduinoJson.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266SSDP.h>
-#include <ESP8266WebServer.h>
+//#include <ESP8266WiFi.h>
+//#include <ESP8266SSDP.h>
+//#include <ESP8266WebServer.h>
+#include <WiFi.h>
+#include <WebServer.h>
 #include <DNSServer.h>
+#include "SPIFFS.h"
 #include <FS.h>
 
-#define DEVICE_NAME "ESP8266 DEVICE"
+#define DEVICE_NAME "ESP DEVICE"
 
 //const char *metaRefreshStr = "<head><meta http-equiv=\"refresh\" content=\"1; url=/\" /></head><body><a href=\"/\">redirecting...</a></body>";
 const char *metaRefreshStr = "<script>window.location='/'</script><a href='/'>redirecting...</a>";
 
 //server objects
-ESP8266WebServer server(80);
+WebServer server(80);
 DNSServer dnsServer;
 PersWiFiManager persWM(server, dnsServer);
 
@@ -129,7 +132,7 @@ void setup() {
 
   }); //server.on api
 
-
+/*
   //SSDP makes device visible on windows network
   server.on("/description.xml", HTTP_GET, []() {
     SSDP.schema(server.client());
@@ -140,8 +143,11 @@ void setup() {
   SSDP.setURL("/");
   SSDP.begin();
   SSDP.setDeviceType("upnp:rootdevice");
-
+*/
   server.begin();
+  
+  DEBUG_PRINT("My IP address");
+  DEBUG_PRINT(WiFi.localIP());  
   DEBUG_PRINT("setup complete.");
 } //void setup
 
