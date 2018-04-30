@@ -1,7 +1,7 @@
 # PersWiFiManager + ESP32
 
 (I'm just trying to add ESP32 support right now, will issue a PR later)
-
+- needs an ESP32 webserver. Until the official one is fixed, use this one: https://github.com/bbx10/WebServer_tng
 
 Current status on ESP32:
 - compiles correctly
