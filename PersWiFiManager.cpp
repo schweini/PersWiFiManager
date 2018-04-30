@@ -1,8 +1,10 @@
-/* PersWiFiManager
-   version 3.0.1
+/* PersWiFiManager ESP32
+   version 3.0.2
    https://r-downing.github.io/PersWiFiManager/
+   https://github.com/schweini/PersWiFiManager
 */
-
+ 
+ 
 #include "PersWiFiManager.h"
 
 #define WIFI_HTM_PROGMEM
