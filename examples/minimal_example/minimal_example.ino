@@ -17,7 +17,8 @@ void setup()
   Serial.begin(115200);
   Serial.println("Starting...");
 
-  persWM.begin();
+
+  persWM.begin("ESP32AP");
 
   //serve files from SPIFFS
   server.onNotFound([]() {
