@@ -9,6 +9,11 @@
 
 #define WIFI_HTM_PROGMEM
 
+// for some reason this one isn't in ESP32
+#ifndef ENC_TYPE_NONE
+#define ENC_TYPE_NONE 7
+#endif
+
 #ifdef WIFI_HTM_PROGMEM
 const char wifi_htm[] PROGMEM = R"=====(<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/><title>ESP WiFi</title><script>function g(i){return document.getElementById(i);};function p(t,l){if(confirm(t)) window.location=l;};function E(s){return document.createElement(s)};var S="setAttribute",A="appendChild",H="innerHTML",X,wl;function scan(){if(X) return;X=new XMLHttpRequest(),wl=document.getElementById('wl');wl[H]="Scanning...";X.onreadystatechange=function(){if (this.readyState==4&&this.status==200){X=0;wl[H]="";this.responseText.split("\n").forEach(function (e){let t=e.split(","), s=t.slice(2).join(',');var d=E('div'),i=E('a'),c=E('a');i[S]('class','s'); c[S]('class','q');i.onclick=function(){g('s').value=s;g('p').focus();};i[A](document.createTextNode(s));c[H]=t[0]+"%"+(parseInt(t[1])?"\uD83D\uDD12":"\u26A0");wl[A](i); wl[A](c);wl[A](document.createElement('br'));});}};X.open("GET","wifi/list",true);X.send();};</script><style>input{padding:5px;font-size:1em;width:95%;}body{text-align:center;font-family:verdana;background-color:black;color:white;}a{color:#1fa3ec;}button{border:0;border-radius:0.3em;background-color:#1fa3ec;color:#fff;line-height:2.4em;font-size:1.2em;width:100%;display:block;}.q{float:right;}.s{display:inline-block;width:14em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}#wl{line-height:1.5em;}</style></head><body><div style='text-align:left;display:inline-block;width:320px;padding:5px'><button onclick="scan()">&#x21bb; Scan</button><p id='wl'></p><form method='post' action='/wifi/connect'><input id='s' name='n' length=32 placeholder='SSID'><br><input id='p' name='p' length=64 type='password' placeholder='password'><br><br><button type='submit'>Connect</button></form><br><br><button onclick="p('Start WPS?','/wifi/wps')">WPS Setup</button><br><button onclick="p('Reboot device?','/wifi/rst')">Reboot</button><br><a href="javascript:history.back()">Back</a> |<a href="/">Home</a></div></body></html>)=====";
 #endif
@@ -74,6 +79,7 @@ void PersWiFiManager::setupWiFiHandlers() {
   IPAddress apIP(192, 168, 1, 1);
   _dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
   _dnsServer->start((byte)53, "*", apIP); //used for captive portal in AP mode
+  //_dnsServer->start( DNS_PORT, "*", apIP); //used for captive portal in AP mode
 
   _server->on("/wifi/list", [&] () {
     //scan for wifi networks
@@ -95,8 +101,9 @@ void PersWiFiManager::setupWiFiHandlers() {
     for (int i = 0; i < n && s.length() < 2000; i++) { //check s.length to limit memory usage
       if (ix[i] != -1) {
         s += String(i ? "\n" : "") + ((constrain(WiFi.RSSI(ix[i]), -100, -50) + 100) * 2) + ","
-             + ((WiFi.encryptionType(ix[i]) == 7) ? 0 : 1) + "," + WiFi.SSID(ix[i]);
-             //+ ((WiFi.encryptionType(ix[i]) == ENC_TYPE_NONE) ? 0 : 1) + "," + WiFi.SSID(ix[i]);
+             // '7' hardcoded for none for ESP32
+			 // + ((WiFi.encryptionType(ix[i]) == 7) ? 0 : 1) + "," + WiFi.SSID(ix[i]);
+             + ((WiFi.encryptionType(ix[i]) == ENC_TYPE_NONE) ? 0 : 1) + "," + WiFi.SSID(ix[i]);
       }
     }
 
@@ -104,15 +111,25 @@ void PersWiFiManager::setupWiFiHandlers() {
     _server->send(200, "text/plain", s);
   }); //_server->on /wifi/list
 
+  
+  // dunno why WPS doens't work on ESP32, but i don't like WPS anyhow.
+
+#ifdef ESP8266
   _server->on("/wifi/wps", [&]() {
     _server->send(200, "text/html", "attempting WPS");
     WiFi.mode(WIFI_STA);
-    //WiFi.beginWPSConfig();
+    WiFi.beginWPSConfig();
     delay(100);
     if (WiFi.status() != WL_CONNECTED) {
       attemptConnection("", "");
     }
   }); //_server->on /wifi/wps
+#else
+  _server->on("/wifi/wps", [&]() {
+    _server->send(200, "text/html", "<h1>WPS not implemented on ESP32 yet.");
+  }); //_server->on /wifi/wps
+	
+#endif
 
   _server->on("/wifi/connect", [&]() {
     _server->send(200, "text/html", "connecting...");
@@ -139,6 +156,9 @@ void PersWiFiManager::setupWiFiHandlers() {
 }//setupWiFiHandlers
 
 bool PersWiFiManager::begin(const String& ssid, const String& pass) {
+#ifdef PERSAPDEBUG
+	PERSAPDEBUG.printl("beginning.")
+#endif
   setupWiFiHandlers();
   return attemptConnection(ssid, pass); //switched order of these two for return
 } //begin

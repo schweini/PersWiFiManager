@@ -14,7 +14,33 @@ Todo:
 - wrap ESP32 specific stuff in ifdefs.
 - fix "Sign in to network" response.
 
-Persistent WiFiManager Arduino library for ESP8266-based microcontrollers
+Persistent WiFiManager Arduino library for ESP8266 and ESP32 -based microcontrollers
+
+
+public funtions:
+
+    PersWiFiManager(WEBSERVER& s, DNSServer& d);
+
+    bool attemptConnection(const String& ssid = "", const String& pass = "");
+
+    void setupWiFiHandlers();
+
+    bool begin(const String& ssid = "", const String& pass = "");
+
+    String getApSsid();
+
+    void setApCredentials(const String& apSsid, const String& apPass = "");
+
+    void setConnectNonBlock(bool b);
+
+    void handleWiFi();
+
+    void startApMode();
+
+    void onConnect(WiFiChangeHandlerFunction fn);
+
+    void onAp(WiFiChangeHandlerFunction fn);
+
 
 
 

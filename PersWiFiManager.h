@@ -16,7 +16,9 @@
 
 #include <DNSServer.h>
 
+#ifndef WIFI_CONNECT_TIMEOUT
 #define WIFI_CONNECT_TIMEOUT 30
+#endif
 
 class PersWiFiManager {
 
