@@ -7,10 +7,12 @@ Current status on ESP32:
 - compiles correctly
 - default AP IP is 192.168.1.1
 - default wifi config panel address is 192.168.1.1/wifi.htm
+- 'sign in to network' doesn't seem to be detected on my ESP32/Android combination yet. So turn off mobil data to access ESP's pages.
 
 Todo:
 - fix (create?) basic usage case documentation
 - wrap ESP32 specific stuff in ifdefs.
+- fix "Sign in to network" response.
 
 Persistent WiFiManager Arduino library for ESP8266-based microcontrollers
 

@@ -1,10 +1,19 @@
 #ifndef PERSWIFIMANAGER_H
 #define PERSWIFIMANAGER_H
 
-//#include <ESP8266WiFi.h>
-//#include <ESP8266WebServer.h>
-#include <WiFi.h>
-#include <WebServer.h>
+#ifdef ESP8266
+	#include <ESP8266WiFi.h>
+	#include <ESP8266WebServer.h>
+	#define WEBSERVER ESP8266WebServer
+	#define WIFI ESP8266WiFi
+#else
+	#include <WiFi.h>
+	#include <WebServer.h>
+	#define WEBSERVER WebServer
+	#define WIFI WiFi
+
+#endif
+
 #include <DNSServer.h>
 
 #define WIFI_CONNECT_TIMEOUT 30
@@ -15,7 +24,7 @@ class PersWiFiManager {
 
     typedef std::function<void(void)> WiFiChangeHandlerFunction;
 
-    PersWiFiManager(WebServer& s, DNSServer& d);
+    PersWiFiManager(WEBSERVER& s, DNSServer& d);
 
     bool attemptConnection(const String& ssid = "", const String& pass = "");
 
@@ -38,7 +47,7 @@ class PersWiFiManager {
     void onAp(WiFiChangeHandlerFunction fn);
 
   private:
-    WebServer * _server;
+    WEBSERVER * _server;
     DNSServer * _dnsServer;
     String _apSsid, _apPass;
 
