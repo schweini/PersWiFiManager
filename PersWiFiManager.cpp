@@ -19,7 +19,8 @@ const char wifi_htm[] PROGMEM = R"=====(<!DOCTYPE html><html><head><meta name="v
 #endif
 
 const byte DNS_PORT = 53;
-IPAddress apIP(192, 168, 1, 1);
+//IPAddress apIP(192,168,4,1);
+IPAddress apIP(10,10,10,1);
 
 PersWiFiManager::PersWiFiManager(WEBSERVER& s, DNSServer& d) {
   _server = &s;
@@ -30,10 +31,13 @@ PersWiFiManager::PersWiFiManager(WEBSERVER& s, DNSServer& d) {
 bool PersWiFiManager::attemptConnection(const String& ssid, const String& pass) {
   //attempt to connect to wifi
   WiFi.mode(WIFI_STA);
-  if (ssid.length()) {
+  if (ssid.length()) 
+  {
     if (pass.length()) WiFi.begin(ssid.c_str(), pass.c_str());
-    else WiFi.begin(ssid.c_str());
-  } else {
+    else WiFi.begin(ssid.c_str());	
+  } 
+  else 
+  {
     WiFi.begin();
   }
 
@@ -58,7 +62,13 @@ void PersWiFiManager::handleWiFi() {
   }
 
   //if failed or not connected and time is up
-  if ((WiFi.status() == WL_CONNECT_FAILED) || ((WiFi.status() != WL_CONNECTED) && ((millis() - _connectStartTime) > (1000 * WIFI_CONNECT_TIMEOUT)))) {
+  if (
+		(WiFi.status() == WL_CONNECT_FAILED) 
+		|| 
+		((WiFi.status() != WL_CONNECTED) && ((millis() - _connectStartTime) > (1000 * WIFI_CONNECT_TIMEOUT)))
+		) 
+  {
+	  DEBUG_PRINTLN("Wifi Timed out, starting AP");
     startApMode();
     _connectStartTime = 0; //reset connect start time
   }
@@ -80,11 +90,18 @@ void PersWiFiManager::setConnectNonBlock(bool b) {
 } //setConnectNonBlock
 
 void PersWiFiManager::setupWiFiHandlers() {
-  //IPAddress apIP(10,10,10,1);
-  _dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
-  //_dnsServer->start((byte)53, "*", apIP); //used for captive portal in AP mode
-  _dnsServer->start( DNS_PORT, "*", apIP); //used for captive portal in AP mode
 
+	DEBUG_PRINTLN("wifi handlers");
+
+  //IPAddress apIP(10,10,10,1);
+
+	//DEBUG_PRINTLN("Delay 10 secs before dns start");
+	//delay(10000);
+  
+  _dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
+  _dnsServer->start( DNS_PORT, "*", apIP); //used for captive portal in AP mode
+  //_dnsServer->start((byte)53, "*", apIP); //used for captive portal in AP mode
+  
   _server->on("/wifi/list", [&] () {
     //scan for wifi networks
     int n = WiFi.scanNetworks();
@@ -163,8 +180,16 @@ bool PersWiFiManager::begin(const String& ssid, const String& pass) {
 #ifdef PERSAPDEBUG
 	PERSAPDEBUG.println("beginning.")
 #endif
+
+
+#ifdef ESP8266
+	// at least on ESP32, this doesn't work, becayse the DNServer has to be declared AFTER the AP is ready. Not sure on ESP8266
+	setupWiFiHandlers();
+	return attemptConnection(ssid, pass); //switched order of these two for return
+#else
+  attemptConnection(ssid, pass);
   setupWiFiHandlers();
-  return attemptConnection(ssid, pass); //switched order of these two for return
+#endif
 } //begin
 
 String PersWiFiManager::getApSsid() {
