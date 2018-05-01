@@ -24,7 +24,7 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println("Wifi connect timeout is:");
-  Serial.print(WIFI_CONNECT_TIMEOUT);
+  Serial.println(WIFI_CONNECT_TIMEOUT);
   Serial.println("Starting...");
 
 
