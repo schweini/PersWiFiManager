@@ -19,9 +19,9 @@ const char wifi_htm[] PROGMEM = R"=====(<!DOCTYPE html><html><head><meta name="v
 #endif
 
 const byte DNS_PORT = 53;
-//IPAddress apIP(192,168,4,1);
+IPAddress apIP(192,168,4,1);
 //IPAddress apIP(10,10,10,1);
-IPAddress apIP(172,217,28,1);
+//IPAddress apIP(172,217,28,1);
 PersWiFiManager::PersWiFiManager(WEBSERVER& s, DNSServer& d) {
   _server = &s;
   _dnsServer = &d;

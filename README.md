@@ -5,7 +5,7 @@
 
 Current status on ESP32:
 - compiles correctly
-- default AP IP is 192.168.1.1
+- default AP IP is 192.168.4.1
 - default wifi config panel address is 192.168.1.1/wifi.htm
 ~~- 'sign in to network' doesn't seem to be detected on my ESP32/Android combination yet. So turn off mobil data to access ESP's pages.~~
 - At least on my Android OnePlus One running LineageOS, the phone will route all traffic over the mobile data connection while connected to a wifi AP that is either in 'captive portal' mode, or if it is detected as not having internet. Annoying workaround is to turn of mobile data. (https://stackoverflow.com/questions/26982762/get-wifi-captive-portal-info?lq=1)
