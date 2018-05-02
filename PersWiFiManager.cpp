@@ -20,8 +20,8 @@ const char wifi_htm[] PROGMEM = R"=====(<!DOCTYPE html><html><head><meta name="v
 
 const byte DNS_PORT = 53;
 //IPAddress apIP(192,168,4,1);
-IPAddress apIP(10,10,10,1);
-
+//IPAddress apIP(10,10,10,1);
+IPAddress apIP(172,217,28,1);
 PersWiFiManager::PersWiFiManager(WEBSERVER& s, DNSServer& d) {
   _server = &s;
   _dnsServer = &d;
@@ -80,6 +80,7 @@ void PersWiFiManager::startApMode(){
 //  IPAddress apIP(192, 168, 1, 1);
   //IPAddress apIP(10, 10, 10, 1);
   WiFi.mode(WIFI_AP);
+//  WiFi.softAPConfig(apIP, IPAddress(0, 0, 0, 0), IPAddress(255, 255, 255, 0));
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
   _apPass.length() ? WiFi.softAP(getApSsid().c_str(), _apPass.c_str()) : WiFi.softAP(getApSsid().c_str());
   if (_apHandler) _apHandler();  
